@@ -8,7 +8,5 @@ coverage-guided-optimization.py is to select seeds using coverage.
 
 uncertainty-guided-optimization.py is to select seeds using uncertainty metric.
 
-retrain.py is to select test cases for model retraining. 
-
 # Coming soon
 More details would be included soon. 
