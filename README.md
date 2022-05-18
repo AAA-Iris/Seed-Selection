@@ -10,7 +10,5 @@ uncertainty-guided-optimization.py is to select seeds using uncertainty metric.
 
 retrain.py is to select test cases for model retraining. 
 
-For testing method (DeepHunter, TensorFuzz), we use the code repository (https://github.com/Shimmer93/Deephunter-backup.git). 
-
 # Coming soon
 More details would be included soon. 
