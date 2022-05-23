@@ -43,16 +43,48 @@ The meanings of the options are:
 
 ```
 python uncertainty-guided-optimization.py
-       -i ../mnist_seeds
-       -num 100
+       -seed ../mnist_seeds
+       -seednum 100
+       -model ../lenet5.h5
+       -out ../optimized_seeds
 ```
 
 The meanings of the options are:
 
-1. `-i` determines which model to be tested, where the 7 pre-profiled files are: `vgg16`, `resnet20`, `mobilenet`, `resnet50`, `lenet1`, `lenet4`, `lenet5`. To be started easily, we integrated 7 models, i.e., their profiling files can be found by DeepHunter. It is fairly possible to test other models; in such scenarios, please use `utils/Profile.py` to profile the new model firstly. Then, it is also easy to integrate the new model and the profiling file in DeepHunter.  
-2. `-criteria` selects different testing criteria; possible values are: `kmnc`, `nbc`, `snac`, `bknc`, `tknc`, `nc`.  
-3. `-random` determines whether applying random testing (1) or coverage-guided testing (0); defaults to 0.
-4. `-select` chooses the selection strategies (when `-random` is 0) from `uniform`, `tensorfuzz`, `deeptest`, `prob`.  
+1. `-seed` is the input seed directory, preserve the seed corpus.
+2. `-seednum` presents the expected number of selected seeds.  
+3. `-model` is the path of tested model.
+4. `-out` is the output directory, preserve the selected seeds.
+
+```
+conda activate tf2-gpu
+python gradient-guided-optimization.py
+       -seednum 100
+       -model ../lenet5.h5
+       -out ../optimized_seeds
+```
+
+The meanings of the options are:
+
+1. `-seednum` presents the expected number of selected seeds.  
+2. `-model` is the path of tested model.
+3. `-out` is the output directory, preserve the selected seeds.
+
+```
+conda activate tf2-gpu
+python retrain.py
+       -dataset mnist
+       -strategy best
+       -random fol
+       -num 600
+```
+
+The meanings of the options are:
+
+1. `-dataset` determines the dataset that we are conducting testing on, possible choices are: `mnist`, `fashionmnist`, `svhn`, `cifar`.
+2. `-strategy` determines which retrain data selection strategy is used, possible choices are: `high`, `low`, `best`, `kmst`. We use 'best' in the paper.
+3. `-random` determines which metric is used to select retrain data, possible choices are: `random`, `pcs`, `fol`. We use `fol` in the paper.
+4. `-num` is the number of retrain data added into training dataset.
 
 # Coming soon
 More details would be included soon. 
