@@ -86,5 +86,9 @@ The meanings of the options are:
 3. `-random` determines which metric is used to select retrain data, possible choices are: `random`, `pcs`, `fol`. We use `fol` in the paper.
 4. `-num` is the number of retrain data added into training dataset.
 
+Note that, in the code, `crash_path` represents the path of test errors, `label_path` represents the path of test error labels, the path of model and the composed test dataset need to be supplemented.
+
+If you want to use MOO-based seed selection, just make sure the value of k1, k2 and k3, run the above code seperately.
+
 # Coming soon
 More details would be included soon. 
