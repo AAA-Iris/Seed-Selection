@@ -260,7 +260,7 @@ preprocess_dic1 = {
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-dataset', help="dataset",
-                            choices=['mnist', 'cifar','fashionmnist','svhn','mnist1'], default='mnist')
+                            choices=['mnist', 'cifar','fashionmnist','svhn'], default='mnist')
     parser.add_argument('-strategy', help="the retrain data selection strategy, used the metric from RobOT", choices=[ 'high','low','best','kmst'], default='best')
     parser.add_argument('-random', help="the metric used to select retrain data", choices=[ 'random','pcs','fol'], default='fol')
     parser.add_argument('-num', help="the number of retrain data added into training dataset", type=int, default='600')
