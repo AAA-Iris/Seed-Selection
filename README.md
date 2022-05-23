@@ -21,6 +21,8 @@ coverage-guided-optimization.py is to select seeds using coverage.
 
 uncertainty-guided-optimization.py is to select seeds using uncertainty metric.
 
+gradient-guided-optimization.py is to select seeds using gradient metric.
+
 retrain.py is to select test cases for model retraining. 
 
 # Usage
