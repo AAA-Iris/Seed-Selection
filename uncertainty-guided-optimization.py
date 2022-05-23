@@ -11,19 +11,9 @@ from keras.models import load_model
 import tensorflow as tf
 import os
 sys.path.append('../')
-
-from keras.applications.vgg16 import preprocess_input
-
 import random
-
 import numpy as np
 import math
-
-def imagenet_preprocessing(input_img_data):
-    temp = np.copy(input_img_data)
-    temp = np.float32(temp)
-    qq = preprocess_input(temp)
-    return qq
 
 def mnist_preprocessing(x_test):
     temp = np.copy(x_test)
@@ -102,16 +92,18 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='uncertainty guided seed selection')
 
-    parser.add_argument('-i', help='input seed directory',default='./seed-corpus')
-    parser.add_argument('-num', help="expected number of seeds",default='100')
+    parser.add_argument('-seed', help='seed corpus directory')
+    parser.add_argument('-seednum', help="expected number of seeds",default='100')
+    parser.add_argument('-model', help='model path')
+    parser.add_argument('-out', help='output directory')
 
     args = parser.parse_args()
     
-    model = load_model('./')
+    model = load_model(args.model)
 
-    preprocess = mnist_preprocessing #change if use other dataset
+    preprocess = mnist_preprocessing   #change if use other dataset
 
-    file=args.i
+    file=args.seed
     seed_lis=os.listdir(file)
     seed_lis.sort(key= lambda x: int(x[:-4]))
     
@@ -127,15 +119,16 @@ if __name__ == '__main__':
             else:
                 pcs=np.append(pcs,eachpcs) #array of PCS
 
-    index=select(pcs, n=args.num, s='low')
+    index=select(pcs, n=args.seednum, s='low')
 
-    if not os.path.exists('./optimized_seeds'):
-        os.makedirs('./optimized_seeds') 
+    if not os.path.exists(args.out):
+        os.makedirs(args.out) 
     else:
-        shutil.rmtree('./optimized_seeds')
-        os.makedirs('./optimized_seeds')
+        shutil.rmtree(args.out)
+        os.makedirs(args.out)
     for j in index:
-        np.save(r'./optimized_seeds/{}'.format(str(j)),np.load(file+"/"+str(j)+".npy"))
-    print(len(os.listdir('./optimized_seeds')))
+        fn="%s/%s" % (args.out, str(j))
+        np.save(fn,np.load(file+"/"+str(j)+".npy"))
+    print(len(os.listdir(args.out)))
     
     
