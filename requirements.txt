@@ -1,0 +1,16 @@
+tensorflow==1.14.0
+keras==2.3.1
+matplotlib
+h5py
+pillow
+scikit-learn
+click
+future
+opencv-python
+tinydb
+scipy
+pandas
+tqdm
+requests
+pyflann-py3
+xxhash
