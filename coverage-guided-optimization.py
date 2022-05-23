@@ -64,13 +64,16 @@ def Select_seeds(seedMap):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='coverage guided seed selection')
     parser.add_argument('-seednum', help="the expected number of seeds", type=int, default=10000)
+    parser.add_argument('-coverage', help='the path of coverage information')
+    parser.add_argument('-seed', help='the path of seed corpus')
+    parser.add_argument('-out', help='output directory')
     args = parser.parse_args()  
-    file_dir='./coverage'   #path of coverage information
-    file='./seed-corpus'    #path of seed corpus
+    file_dir=args.coverage   #path of coverage information
+    file=args.seed    #path of seed corpus
     tasks=os.listdir(file_dir)
     tasks.sort(key= lambda x: int(x[:-4])) 
-    if not os.path.exists('./optimized_seeds'):
-        os.makedirs('./optimized_seeds')
+    if not os.path.exists(args.out):
+        os.makedirs(args.out)
     stage=[[]]
     i=0
     for c_n in tasks:
@@ -78,7 +81,7 @@ if __name__ == '__main__':
             f = np.load(file_dir+"/"+c_n)
             n_num=f.shape[0]
             f=f.reshape(1,n_num)
-            if c_n in os.listdir('./optimized_seeds'):
+            if c_n in os.listdir(args.out):
                 f=np.zeros((1,n_num))
             if i==0:
                 stage=f
@@ -89,20 +92,18 @@ if __name__ == '__main__':
 
     resSeed, neuronList=Select_seeds(stage) 
   
-    num=len(os.listdir('./optimized_seeds'))  
+    num=len(os.listdir(args.out))  
     if len(resSeed)<= (args.seednum-num):   
         for i in resSeed: 
-            np.save(r'./optimized_seeds/{}'.format(tasks[i]),np.load(file+"/"+tasks[i]))   
+            fn="%s/%s" % (args.out, tasks[i])
+            np.save(fn,np.load(file+"/"+tasks[i]))   
     else:
         label=random.sample(resSeed,args.seednum-num)
-        for i in label:        
-            np.save(r'./optimized_seeds/{}'.format(tasks[i]),np.load(file+"/"+tasks[i]))
+        for i in label:  
+            fn="%s/%s" % (args.out, tasks[i])
+            np.save(fn,np.load(file+"/"+tasks[i]))         
     print("seed:",resSeed)
     print("seed number：",len(resSeed))
     #print("neuron:",neuronList)
     print("neuron number：",len(neuronList))
-    print(len(os.listdir('./optimized_seeds')))
-
-
-
-
+    print(len(os.listdir(args.out)))
