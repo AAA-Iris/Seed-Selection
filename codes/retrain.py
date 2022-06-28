@@ -313,7 +313,7 @@ if __name__ == '__main__':
             xtest, ytest = f['advs'], f['labels']
 
     elif args.dataset == 'cifar':
-        model = load_model("/data/zyh/deephunter/deephunter/profile/cifar10/models/resnet.h5")
+        model = load_model("./models/resnet.h5")
         (_, _),(x_test, y_test) = cifar10.load_data()
         x_train = cifar_preprocessing(x_train)
         x_test = cifar_preprocessing(x_test)      
