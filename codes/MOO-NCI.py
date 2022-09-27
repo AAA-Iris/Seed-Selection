@@ -106,10 +106,10 @@ def rank(x):
     return y
 
 model_weight_path = {
-    'resnet20': "./profile/cifar10/models/resnet.h5",
-    'lenet5': "./profile/mnist/models/lenet5.h5",
-    'lenet5_fm':'./profile/fashion-mnist/models/Lenet5_fm258.h5',
-    'svhnnet':'./profile/SVHN/svhn_model.086.h5'
+    'resnet20': "./Seed-Selection/models/cifar-10/resnet20.h5",
+    'lenet5': "./Seed-Selection/models/mnist/lenet5.h5",
+    'lenet5_fm':'./Seed-Selection/models/fashion-mnist/lenet5.h5',
+    'svhnnet':'./Seed-Selection/models/svhn/cnn-model.h5'
 }
 
 preprocess_dic = {
