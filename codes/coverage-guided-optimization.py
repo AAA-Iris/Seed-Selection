@@ -1,65 +1,40 @@
 from pulp import *
 import os
 import numpy as np
-from keras.models import load_model
-import random
 import argparse
+import random
+import shutil
+import copy
 
 def Select_seeds(seedMap):   
     '''
     input: seedMap: a numpy of (n*m) {0/1}
     output: resSeed: a list of selected seeds
-            neuronList: all neurons to be covered
     '''
     
-    Variable=[]
-    #built variable for each x_i
-    for i in range(seedMap.shape[0]):
-        Variable.append(LpVariable("Seed+"+str(i),lowBound=0,upBound=1,cat=LpBinary))
-    
-    neuronList=[]
-    #built constraints for each neuron
-    LpBase=LpProblem(name='select_seeds',sense=LpMinimize)
-    
-    for j in range(seedMap.shape[1]):
-        flag=np.sum(seedMap[:,j])
-        if flag!=0:
-            #print(j)
-            neuronList.append(j)
-            x=[]
-            y=[]
-            for i in range(seedMap.shape[0]):
-                if seedMap[i][j]==1:
-                    x.append(Variable[i])
-                    y.append(1)
-            c=LpConstraint(LpAffineExpression([(x[i],y[i]) for i in range(len(x))]), LpConstraintGE, str(j),1)
-            LpBase+=c
-    
-    #add the optimized target
-    LpBase+=lpSum([Variable[i] for i in range(seedMap.shape[0])])
-    #try to solve
-    try:
-        solver=getSolver('PULP_CBC_CMD',msg=0,timeLimit=6000)
-        resl=LpBase.solve(solver)
-        status = LpStatus[LpBase.status]
-    except:
-        print("Wrong")
-        return None
-
-    #get the answer
     resSeed=[]
-    if status=='Optimal':
-        for v in LpBase.variables():
-            if v.varValue==1:
-                st=v.name
-                st=st.replace("_"," ")
-                st=st.split()
-                st=st[1]
-                resSeed.append(int(st))
-    else:
-        print(str(status))
-    
-    return resSeed, neuronList
+    seed_map=copy.deepcopy(seedMap)
+    x=0
+    Variable=[]
+    for i in range(seed_map.shape[0]):
+            if i==0:
+                Variable=sum(seed_map[i])
+            else:
+                Variable=np.append(Variable,sum(seed_map[i])) 
+    while sum(Variable)>0:
+        Variable=[]
+        for i in range(seed_map.shape[0]):
+            if i==0:
+                Variable=sum(seed_map[i])
+            else:
+                Variable=np.append(Variable,sum(seed_map[i])) 
+        ranks = np.argsort(-Variable)   
+        resSeed.append(ranks[0])
+        for i in range(seed_map.shape[1]):
+            if seed_map[ranks[0],i]==1:
+                seed_map[:,i]=0
+        x=x+1
+    return resSeed
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='coverage guided seed selection')
@@ -90,20 +65,24 @@ if __name__ == '__main__':
                 stage=np.append(stage,f,axis=0) #get the coverage targets
     print(stage.shape)
 
-    resSeed, neuronList=Select_seeds(stage) 
-  
-    num=len(os.listdir(args.out))  
-    if len(resSeed)<= (args.seednum-num):   
-        for i in resSeed: 
-            fn="%s/%s" % (args.out, tasks[i])
-            np.save(fn,np.load(file+"/"+tasks[i]))   
+    if not os.path.exists(args.out):
+        os.makedirs(args.out)
     else:
-        label=random.sample(resSeed,args.seednum-num)
-        for i in label:  
-            fn="%s/%s" % (args.out, tasks[i])
-            np.save(fn,np.load(file+"/"+tasks[i]))         
-    print("seed:",resSeed)
-    print("seed number：",len(resSeed))
-    #print("neuron:",neuronList)
-    print("neuron number：",len(neuronList))
-    print(len(os.listdir(args.out)))
+        shutil.rmtree(args.out)
+        os.makedirs(args.out)
+    num=len(os.listdir(args.out))
+    while num<args.seednum:
+        resSeed = Select_seeds(stage)
+        if len(resSeed)<= (args.seednum-num):   
+            for i in resSeed: 
+                fn="%s/%s" % (args.out, tasks[i])
+                np.save(fn,np.load(file+"/"+tasks[i]))   
+                stage[i]=0
+        else:
+            label=random.sample(resSeed,args.seednum-num)
+            for i in label:     
+                fn="%s/%s" % (args.out, tasks[i])   
+                np.save(fn,np.load(file+"/"+tasks[i]))    
+        num=len(os.listdir(args.out))
+
+    print('seed number:',len(os.listdir(args.out)))
