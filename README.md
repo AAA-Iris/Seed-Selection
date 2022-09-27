@@ -5,6 +5,7 @@ A virtual environment is strongly recommended to ensure the requirements may be 
 We test DeepHunter and TensorFuzz based on Python 3.6 and Tensorflow 1.14.0. 
 To install the requirements, run:
 ```
+conda create -n py36 python=3.6
 pip install -r requirements.txt
 ```
 Since we integrate the method of tes case selection in RobOT, we extend the environment of this method to ensure the consistency between our results and the original result, so the environment of the retraining process is Python 3.6 and Tensorflow 2.2.0.
@@ -29,9 +30,12 @@ retrain.py is to select test cases for model retraining.
 ## Example of Running the Code:
 
 ```
+conda activate py36
+unzip mnist_seeds.zip
+unzip mnist_coverage_nc.zip
 python coverage-guided-optimization.py
        -seednum 100
-       -coverage ../coverage
+       -coverage ../mnist_coverage_nc
        -seed ../mnist_seeds
        -out ../optimized_seeds
 ```
@@ -44,10 +48,11 @@ The meanings of the options are:
 4. `-out` is the output directory, preserve the selected seeds.
 
 ```
+conda activate py36
 python uncertainty-guided-optimization.py
        -seed ../mnist_seeds
        -seednum 100
-       -model ../lenet5.h5
+       -model ../Seed-Selection/models/mnist/lenet5.h5
        -out ../optimized_seeds
 ```
 
@@ -62,7 +67,7 @@ The meanings of the options are:
 conda activate tf2-gpu
 python gradient-guided-optimization.py
        -seednum 100
-       -model ../lenet5.h5
+       -model ../Seed-Selection/models/mnist/lenet5.h5
        -out ../optimized_seeds
 ```
 
@@ -90,7 +95,23 @@ The meanings of the options are:
 
 Note that, in the code, `crash_path` represents the path of test errors, `label_path` represents the path of test error labels, the path of model and the composed test dataset need to be supplemented.
 
-If you want to use MOO-based seed selection, just make sure the value of k1, k2 and k3, run the above code seperately.
+```
+conda activate tf2-gpu
+python MOO-NCI.py
+       -i mnist_seeds
+       -coverage ../mnist_coverage_nc
+       -model ../Seed-Selection/models/mnist/lenet5.h5
+       -seednum 200
+       -out ../optimized_seeds
+```
+
+The meanings of the options are:
+
+1. `-i` is the path of seed corpus, the directory contains several files which preserve single seed with array format in each file.
+2. `-coverage` is the path of coverage information, the directory preserves the coverage information of all original seeds, it contains several files which preserve coverage information of single seed with array format in each file.
+3. `-model` is the path of tested model.
+4. `-seednum` presents the expected number of selected seeds.  
+5. `-out` is the output directory, preserve the selected seeds.
 
 # Coming soon
 More details would be included soon. 
